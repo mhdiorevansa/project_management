@@ -11,13 +11,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
 
-export default function LoginPage() {
+export default function RegisterPage() {
 	return (
 		<section className="w-full h-screen flex justify-center items-center">
 			<Card className="w-full max-w-sm">
 				<CardHeader className="text-center">
-					<CardTitle className="text-xl">Login Account</CardTitle>
-					<CardDescription>Enter your email below to login to your account</CardDescription>
+					<CardTitle className="text-xl">Register Account</CardTitle>
+					<CardDescription>Enter your email below to rehister to your account</CardDescription>
 				</CardHeader>
 				<CardContent>
 					<form>
@@ -27,14 +27,7 @@ export default function LoginPage() {
 								<Input id="email" type="email" placeholder="user@example.com" required />
 							</div>
 							<div className="grid gap-2">
-								<div className="flex items-center">
-									<Label htmlFor="password">Password</Label>
-									<a
-										href="#"
-										className="ml-auto inline-block text-sm underline-offset-4 hover:underline">
-										Forgot your password?
-									</a>
-								</div>
+								<Label htmlFor="password">Password</Label>
 								<Input id="password" type="password" placeholder="••••••" required />
 							</div>
 						</div>
@@ -42,10 +35,10 @@ export default function LoginPage() {
 				</CardContent>
 				<CardFooter className="flex-col gap-2">
 					<Button type="submit" className="w-full">
-						Login
+						Register
 					</Button>
 					<Button asChild variant={"outline"} className="w-full">
-						<Link href="/register">Register</Link>
+						<Link href="/login">Login</Link>
 					</Button>
 				</CardFooter>
 			</Card>
