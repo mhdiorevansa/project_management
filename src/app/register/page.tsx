@@ -78,7 +78,12 @@ export default function RegisterPage() {
 								disabled={loading}>
 								{loading ? "Loading..." : "Register"}
 							</Button>
-							<Button asChild variant={"outline"} type="button" className="w-full">
+							<Button
+								asChild
+								variant={"outline"}
+								type="button"
+								className="w-full"
+								disabled={loading}>
 								<Link href="/login">Login</Link>
 							</Button>
 						</div>
