@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import createBrowserSupabaseClient from "@/lib/supabase/browser-client";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter } from "nextjs-toploader/app";
 import { FormEvent, useState } from "react";
 import { toast } from "sonner";
 
@@ -27,15 +27,18 @@ export default function RegisterPage() {
 		if (password.length < 6) {
 			toast.warning("Password must be at least 6 characters");
 			return;
+		} else if (error) {
+			if (error.message === "User already registered") {
+				toast.warning("User already registered");
+				return;
+			} else {
+				console.error(error);
+				toast.error("An error occurred");
+				return;
+			}
 		}
-		if (error) {
-			console.error(error);
-			toast.error("An error occurred");
-			return;
-		} else {
-			toast.success("Login successfully");
-			router.push("/dashboard");
-		}
+		toast.success("Login successfully");
+		router.push("/dashboard");
 	}
 
 	return (
@@ -54,36 +57,31 @@ export default function RegisterPage() {
 									id="email"
 									type="email"
 									name="email"
+									onChange={(e) => setEmail(e.target.value)}
 									placeholder="user@example.com"
 									required
-									onChange={(e) => setEmail(e.target.value)}
 								/>
 							</div>
 							<div className="grid gap-2">
 								<Label htmlFor="password">Password</Label>
 								<Input
 									id="password"
-									type="password"
 									name="password"
+									type="password"
+									onChange={(e) => setPassword(e.target.value)}
 									placeholder="••••••"
 									required
-									onChange={(e) => setPassword(e.target.value)}
 								/>
 							</div>
 						</div>
 						<div className="space-y-2 mt-4">
 							<Button
 								type="submit"
-								className={`w-full mt-2 ${loading ? "cursor-no-drop" : "cursor-pointer"}`}
+								className={`w-full ${loading ? "cursor-no-drop" : "cursor-pointer"}`}
 								disabled={loading}>
-								{loading ? "Loading..." : "Register"}
+								{loading ? "Registering..." : "Register"}
 							</Button>
-							<Button
-								asChild
-								variant={"outline"}
-								type="button"
-								className="w-full"
-								disabled={loading}>
+							<Button asChild variant={"outline"} className="w-full" disabled={loading}>
 								<Link href="/login">Login</Link>
 							</Button>
 						</div>

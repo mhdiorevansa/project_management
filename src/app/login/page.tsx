@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import createBrowserSupabaseClient from "@/lib/supabase/browser-client";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter } from "nextjs-toploader/app";
 import { FormEvent, useState } from "react";
 import { toast } from "sonner";
 
@@ -19,19 +19,21 @@ export default function LoginPage() {
 	async function handleSubmit(e: FormEvent<HTMLFormElement>) {
 		e.preventDefault();
 		setLoading(true);
-		const { error } = await createBrowserSupabaseClient.auth.signInWithPassword({
+		const { data, error } = await createBrowserSupabaseClient.auth.signInWithPassword({
 			email,
 			password,
 		});
 		setLoading(false);
-		if (error) {
+		if (!data.user) {
+			toast.warning("User not found, please check your email and password");
+			return;
+		} else if (error) {
 			console.error(error);
 			toast.error("An error occurred");
 			return;
-		} else {
-			toast.success("Login successfully");
-			router.push("/dashboard");
 		}
+		toast.success("Login successfully");
+		router.push("/dashboard");
 	}
 
 	return (
@@ -72,7 +74,7 @@ export default function LoginPage() {
 								type="submit"
 								className={`w-full ${loading ? "cursor-no-drop" : "cursor-pointer"}`}
 								disabled={loading}>
-								{loading ? "Loading..." : "Login"}
+								{loading ? "Logging in..." : "Login"}
 							</Button>
 							<Button asChild variant={"outline"} className="w-full" disabled={loading}>
 								<Link href="/register">Register</Link>
