@@ -27,15 +27,17 @@ import {
 	DialogTitle,
 } from "./ui/dialog";
 import { Button } from "./ui/button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import createBrowserSupabaseClient from "@/lib/supabase/browser-client";
 import { toast } from "sonner";
 import { useRouter } from "nextjs-toploader/app";
+import { Profile } from "@/types/profile";
 
 export function NavUser() {
 	const { isMobile } = useSidebar();
 	const [loading, setLoading] = useState(false);
 	const [showDialog, setShowDialog] = useState(false);
+	const [profile, setProfile] = useState<Profile | null>(null);
 	const router = useRouter();
 
 	async function handleLogout() {
@@ -51,6 +53,32 @@ export function NavUser() {
 		router.push("/login");
 	}
 
+	useEffect(() => {
+		async function fetchProfileUser() {
+			const {
+				data: { user },
+				error: errorAuth,
+			} = await createBrowserSupabaseClient.auth.getUser();
+			if (errorAuth) {
+				console.error(errorAuth);
+				toast.error("An error occurred");
+				return;
+			}
+			const { data: profile, error: errorProfile } = await createBrowserSupabaseClient
+				.from("user_profiles")
+				.select("*")
+				.eq("id", user?.id)
+				.single();
+			if (errorProfile) {
+				console.error(errorProfile);
+				toast.error("An error occurred");
+				return;
+			}
+			setProfile(profile);
+		}
+		fetchProfileUser();
+	}, []);
+
 	return (
 		<SidebarMenu>
 			<SidebarMenuItem>
@@ -64,8 +92,8 @@ export function NavUser() {
 								<AvatarFallback className="rounded-lg">CN</AvatarFallback>
 							</Avatar>
 							<div className="grid flex-1 text-left text-sm leading-tight">
-								<span className="truncate font-medium">abdel</span>
-								<span className="truncate text-xs">abdel@email.com</span>
+								<span className="truncate font-medium">{profile?.full_name}</span>
+								<span className="truncate text-xs">{profile?.email}</span>
 							</div>
 							<ChevronsUpDown className="ml-auto size-4" />
 						</SidebarMenuButton>
@@ -82,8 +110,8 @@ export function NavUser() {
 									<AvatarFallback className="rounded-lg">CN</AvatarFallback>
 								</Avatar>
 								<div className="grid flex-1 text-left text-sm leading-tight">
-									<span className="truncate font-medium">abdel</span>
-									<span className="truncate text-xs">abdel@email.com</span>
+									<span className="truncate font-medium">{profile?.full_name}</span>
+									<span className="truncate text-xs">{profile?.email}</span>
 								</div>
 							</div>
 						</DropdownMenuLabel>
