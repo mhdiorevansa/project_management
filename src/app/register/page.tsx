@@ -14,30 +14,49 @@ export default function RegisterPage() {
 	const router = useRouter();
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
+	const [fullName, setFullName] = useState("");
 	const [loading, setLoading] = useState(false);
 
 	async function handleSubmit(e: FormEvent<HTMLFormElement>) {
 		e.preventDefault();
 		setLoading(true);
-		const { error } = await createBrowserSupabaseClient.auth.signUp({
+		const {
+			data: { user },
+			error: signUpError,
+		} = await createBrowserSupabaseClient.auth.signUp({
 			email,
 			password,
 		});
-		setLoading(false);
 		if (password.length < 6) {
 			toast.warning("Password must be at least 6 characters");
 			return;
-		} else if (error) {
-			if (error.message === "User already registered") {
+		} else if (signUpError) {
+			if (signUpError.message === "User already registered") {
 				toast.warning("User already registered");
 				return;
 			} else {
-				console.error(error);
+				console.error(signUpError);
 				toast.error("An error occurred");
 				return;
 			}
+		} else if (!user) {
+			toast.error("User not found, please try again");
+			return;
 		}
-		toast.success("Login successfully");
+		const { error: profileError } = await createBrowserSupabaseClient.from("profiles").insert({
+			id: user.id,
+			full_name: fullName,
+		});
+		setLoading(false);
+		if (fullName.length < 1) {
+			toast.warning("Full name is required");
+			return;
+		} else if (profileError) {
+			console.error(profileError);
+			toast.error("An error occurred");
+			return;
+		}
+		toast.success("Signup successfully");
 		router.push("/dashboard");
 	}
 
@@ -51,6 +70,17 @@ export default function RegisterPage() {
 				<CardContent>
 					<form onSubmit={handleSubmit}>
 						<div className="flex flex-col gap-6">
+							<div className="grid gap-2">
+								<Label htmlFor="email">Full Name</Label>
+								<Input
+									id="full_name"
+									type="text"
+									name="full_name"
+									onChange={(e) => setFullName(e.target.value)}
+									placeholder="John Doe"
+									required
+								/>
+							</div>
 							<div className="grid gap-2">
 								<Label htmlFor="email">Email</Label>
 								<Input
