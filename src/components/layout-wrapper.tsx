@@ -9,7 +9,8 @@ import { AppSidebar } from "./app-sidebar";
 export default function LayoutWrapper({ children }: { children: React.ReactNode }) {
 	const pathname = usePathname();
 	const isAuthPage = pathname === "/login" || pathname === "/register";
-
+	const nameBreadCrumb =
+		pathname.replace(/\//g, "").charAt(0).toUpperCase() + pathname.replace(/\//g, "").slice(1);
 	if (isAuthPage) return <>{children}</>;
 
 	return (
@@ -23,7 +24,7 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
 						<Breadcrumb>
 							<BreadcrumbList>
 								<BreadcrumbItem>
-									<BreadcrumbLink href="#">Dashboard</BreadcrumbLink>
+									<BreadcrumbLink href="#">{nameBreadCrumb}</BreadcrumbLink>
 								</BreadcrumbItem>
 							</BreadcrumbList>
 						</Breadcrumb>
